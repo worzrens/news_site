@@ -1,26 +1,20 @@
-import datetime
-
-from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.core.exceptions import ValidationError
-from django.forms import ModelForm
-from django.utils.translation import ugettext_lazy as _
 
-from back.models import NewsSiteUser
+from .models import User
 
 
 class CreateUserForm(UserCreationForm):
     class Meta:
-        model = NewsSiteUser
+        model = User
         exclude = ('username',)
-        fields = ['email', 'password', 'name', 'last_name', 'date_of_birth']
+        fields = ['email', 'name', 'last_name', 'date_of_birth']
 
 
 class ChangeUserForm(UserChangeForm):
     class Meta:
-        model = NewsSiteUser
+        model = User
         exclude = ('username',)
-        fields = ['email', 'password', 'name', 'last_name', 'date_of_birth']
+        fields = ['email', 'name', 'last_name', 'date_of_birth']
 
     # email = forms.EmailField()
     # password1 = forms.PasswordInput()
