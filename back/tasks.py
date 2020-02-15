@@ -29,7 +29,8 @@ app = Celery('tasks')
 app.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 
 
-HTML_CONTENT = """
+def get_html_content(url, name):
+    return """
 <html>
    <head>
       <style> 
@@ -40,10 +41,20 @@ HTML_CONTENT = """
             font-size: 15px;
         }}
            
-        .button {{
+        a {{
           background-color: #f44336;
           border: none;
-          color: white;
+          padding: 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 20px;
+          cursor: pointer;
+        }}
+        a:visited {{
+          background-color: #f44336;
+          border: none;
           padding: 20px;
           text-align: center;
           text-decoration: none;
@@ -54,14 +65,12 @@ HTML_CONTENT = """
         }}
       </style>
    </head>
-   <body>
+   <body link='white' alink='white' vlink='white'>
       <div style="background-color:#ececec;padding:0;margin:0 auto;font-weight:200;width:100%!important">
         <h4>
-          Dear User, please click on the button below to verify your registration
+          Dear {name}, please click on the button below to verify your registration
         </h4>
-        <button class='button' onclick="location.href='{0}';">
-            CONFIRM EMAIL ADRESS
-        </button>
+        <a href="{url}">CONFIRM EMAIL ADDRESS</a>
       </div>
    </body>
 </html>
@@ -76,7 +85,8 @@ HTML_CONTENT = """
     </div>
   </div>
 </div>
-"""
+""".format(url=url, name=name)
+
 
 @app.task
 def send_confirmation_letter(**kwargs):
@@ -91,7 +101,7 @@ def send_confirmation_letter(**kwargs):
         to_emails=kwargs.get('user_email'),
         subject='Confirm registration',
         plain_text_content='To verify your account, go on {0}'.format(activation_link),
-        html_content=HTML_CONTENT.format(activation_link)
+        html_content=get_html_content(activation_link, kwargs.get('user_name'))
     )
     try:
         sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
