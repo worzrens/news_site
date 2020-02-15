@@ -69,3 +69,25 @@ class ActivateUser(View):
             user = form.save()
             update_session_auth_hash(request, user)
             return HttpResponse('Password changed successfully')
+
+
+def posts(request):
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            send_confirmation_letter.apply_async((), {'user_pk': user.pk, 'user_email': user.email, 'user_name': "User" if str(user.name)=='None' else user.name})
+
+            login(request, user)
+            return redirect('home')
+    else:
+        form = CreateUserForm()
+    return render(request, 'register.html', {'form': form})
+
+
+
+
+
+
+
+

@@ -33,3 +33,5 @@ zipp==0.6.0
 python-http-client==3.2.4
 sendgrid==6.1.1
 django-sendgrid-webhook==0.3.0
+django-ckeditor==5.9.0
+django-js-asset==1.2.2
