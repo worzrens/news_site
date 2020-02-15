@@ -1,4 +1,6 @@
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+import logging
+
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 
 from .models import User
 
@@ -15,6 +17,12 @@ class ChangeUserForm(UserChangeForm):
         model = User
         exclude = ('username',)
         fields = ['email', 'name', 'last_name', 'date_of_birth']
+
+
+class LoginForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        logging.info('using custom login')
+        pass
 
     # email = forms.EmailField()
     # password1 = forms.PasswordInput()

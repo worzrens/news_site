@@ -2,7 +2,11 @@
 
 {% block content %}
     <h2>Welcome, {{ user.name }}</h2>
-    <p>Password {{ user.password }}!</p>
+    {% if user.is_active == True %}
+        <div>User activated</div>
+    {% else %}
+        <div>Activate user!!!!</div>
+    {% endif %}
     <p>Mail {{ user.email }}!</p>
     <p>Last name {{ user.last_name }}!</p>
 {% endblock %}

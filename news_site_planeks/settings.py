@@ -25,6 +25,7 @@ SECRET_KEY = 'wsb&+u=!ih3$ik@*+j@e-(um4e%6a5j_(&xz&ft5b*s*fdu48+'
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'back',
 ]
 
@@ -120,4 +122,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'back.User'
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend']
+
+LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/home'
