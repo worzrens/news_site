@@ -29,6 +29,55 @@ app = Celery('tasks')
 app.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 
 
+HTML_CONTENT = """
+<html>
+   <head>
+      <style> 
+        .message {{
+            margin: 20px;
+            padding: 20px;
+            text-align: center;
+            font-size: 15px;
+        }}
+           
+        .button {{
+          background-color: #f44336;
+          border: none;
+          color: white;
+          padding: 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 20px;
+          cursor: pointer;
+        }}
+      </style>
+   </head>
+   <body>
+      <div style="background-color:#ececec;padding:0;margin:0 auto;font-weight:200;width:100%!important">
+        <h4>
+          Dear User, please click on the button below to verify your registration
+        </h4>
+        <button class='button' onclick="location.href='{0}';">
+            CONFIRM EMAIL ADRESS
+        </button>
+      </div>
+   </body>
+</html>
+
+
+<div>
+  <div>
+    <div>
+      <div>
+
+      </div>
+    </div>
+  </div>
+</div>
+"""
+
 @app.task
 def send_confirmation_letter(**kwargs):
     logging.info('Sending confirmation email')
@@ -41,7 +90,8 @@ def send_confirmation_letter(**kwargs):
         from_email='worzrens@gmail.com',
         to_emails=kwargs.get('user_email'),
         subject='Confirm registration',
-        html_content='<strong>To confirm registration press on this <a href="'+activation_link+'">link</a> </strong>'
+        plain_text_content='To verify your account, go on {0}'.format(activation_link),
+        html_content=HTML_CONTENT.format(activation_link)
     )
     try:
         sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
