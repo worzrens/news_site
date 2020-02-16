@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Welcome, {{ user.name }}</h2>
-    {% if user.is_active == True %}
-        <div>User activated</div>
-    {% else %}
-        <div>Activate user!!!!</div>
+    <h2 class="mt-5">Welcome, {{ user.name }}</h2>
+    {% if user.is_active == False %}
+        <div class="col-2 mx-auto alert alert-danger" role="alert">
+            You haven't verified your email!
+        </div>
     {% endif %}
-    <p>Mail {{ user.email }}!</p>
-    <p>Last name {{ user.last_name }}!</p>
-    <a href="http://127.1.1.1:8000/posts/">Feed</a>
-    <a href="http://127.1.1.1:8000/new_post/">Create new post</a>
+
+
+    <a class="btn btn-primary" href="/posts/">Feed</a>
+    <a class="btn btn-primary" href="/new_post/">Create new post</a>
 {% endblock %}

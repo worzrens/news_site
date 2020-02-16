@@ -42,8 +42,8 @@ def get_html_content_activate_account(url, name):
         }}
            
         a {{
-          background-color: #f44336;
-          border: none;
+          background-color: white;
+          border: solid 1px #0000CD;
           padding: 20px;
           text-align: center;
           text-decoration: none;
@@ -52,17 +52,7 @@ def get_html_content_activate_account(url, name):
           margin: 20px;
           cursor: pointer;
         }}
-        a:visited {{
-          background-color: #f44336;
-          border: none;
-          padding: 20px;
-          text-align: center;
-          text-decoration: none;
-          display: inline-block;
-          font-size: 16px;
-          margin: 20px;
-          cursor: pointer;
-        }}
+
       </style>
    </head>
    <body link='white' alink='white' vlink='white'>
