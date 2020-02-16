@@ -10,8 +10,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.views import View
 
 from .forms import CreateUserForm
-from .models import Post
-from .tasks import send_confirmation_letter
+from .models import Post, Comment
+from .tasks import send_confirmation_letter, notify_about_comment
 from .tokens import account_activation_token
 
 
@@ -30,8 +30,11 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            send_confirmation_letter.apply_async((), {'user_pk': user.pk, 'user_email': user.email,
-                                                      'user_name': "User" if str(user.name) == 'None' else user.name})
+            send_confirmation_letter.apply_async((), {
+                'user_pk': user.pk,
+                'user_email': user.email,
+                'user_name': "User" if str(user.name) == 'None' else user.name
+            })
 
             login(request, user)
             return redirect('home')
@@ -76,6 +79,33 @@ class ActivateUser(View):
 
 
 def posts(request):
+    all_posts = Post.objects.filter(status='approved')
+    your_posts = Post.objects.filter(status='approved').filter(created_by=request.user)
+    return render(request, 'posts/list_posts.html', {"all_posts": all_posts, 'your_posts': your_posts})
+
+
+def comments(request, post_id):
+    if request.method == 'GET':
+        template_name = 'posts/create_comment.html'
+        return render(request, template_name)
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        user = request.user
+        to_post = Post.objects.get(id=post_id)
+
+        comment = Comment(text=text, to_post=to_post, created_by=user)
+        comment.save()
+
+        notify_about_comment.apply_async((), {
+            'to_user_email': to_post.created_by.email,
+            'from_user_email': user.email,
+            'post_text': to_post.message,
+            'comment_text': text
+        })
+        return redirect('posts')
+
+
+def new_post(request):
     if request.method == 'GET':
         template_name = 'posts/create_post.html'
         return render(request, template_name)
@@ -84,6 +114,9 @@ def posts(request):
         message = request.POST.get('message')
         user = request.user
 
-        post = Post(message=message, created_by=user)
+        if user.role != 'user':
+            post = Post(message=message, created_by=user, status='approved')
+        else:
+            post = Post(message=message, created_by=user)
         post.save()
         return HttpResponse('Added and waiting for approval', status=201)

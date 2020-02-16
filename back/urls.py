@@ -3,12 +3,16 @@ from django.conf.urls import url
 from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_views
+from django.urls import path
+
 from back import views
 from back.forms import LoginForm
 
 urlpatterns = [
     url(r'^home/', views.home, name='home'),
     url(r'^posts/', views.posts, name='posts'),
+    url(r'^new_post/', views.new_post, name='new_post'),
+    path('comments/<int:post_id>/', views.comments),
 
     url(r'^register/', views.register, name='register'),
     url(r'^email_confirmed/', views.email_confirmed, name='email_confirmed'),

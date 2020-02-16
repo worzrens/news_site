@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Feed</h2>
+  {% csrf_token %}
+
+    {% for post in all_posts %}
+      <div style="border: #1f292e solid 1px; width: 50rem; height: 10rem; display: flex; justify-content: space-evenly; padding: 20px">
+        <div>
+          <p>{{post.message|safe}}</p>
+            <p><strong>At: </strong>{{ post.created_at }}</p>
+          <p><strong>By: </strong>{{ post.created_by.email }}</p>
+        </div>
+      <div>
+          <strong>Comments:</strong><br>
+          {% for comment in post.comment_set.all %}
+          <div style="border: #0E2231 solid 1px; padding: 5px">
+            <p>{{comment.text|safe}}</p>
+            <p><strong>By: </strong>{{comment.created_by}}</p>
+            <p>{{comment.created_at}}</p>
+          </div>
+          {% endfor %}
+          <a href="/comments/{{ post.id }}">Leave a comment</a>
+      </div>
+
+      </div>
+    {% endfor %}
+
+<h2>Your Posts</h2>
+
+    {% for post in your_posts %}
+      <div style="border: #1f292e solid 1px; width: 80rem; display: flex; justify-content: space-evenly">
+          <p>{{post.message|safe}}</p>
+          <p><strong>{{ post.created_at }}</strong></p>
+      </div>
+    {% endfor %}
+
+{% endblock %}
