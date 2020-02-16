@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <h3>Add new post:</h3>
+    <textarea name="message" id="editor"></textarea>
+    <input type="submit"/>
+</form>
+
+<script type="text/javascript">
+    CKEDITOR.replace("editor");
+</script>
+
+
+{% endblock %}

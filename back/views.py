@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import authenticate, login, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -8,6 +10,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.views import View
 
 from .forms import CreateUserForm
+from .models import Post
 from .tasks import send_confirmation_letter
 from .tokens import account_activation_token
 
@@ -27,7 +30,8 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            send_confirmation_letter.apply_async((), {'user_pk': user.pk, 'user_email': user.email, 'user_name': "User" if str(user.name)=='None' else user.name})
+            send_confirmation_letter.apply_async((), {'user_pk': user.pk, 'user_email': user.email,
+                                                      'user_name': "User" if str(user.name) == 'None' else user.name})
 
             login(request, user)
             return redirect('home')
@@ -72,22 +76,14 @@ class ActivateUser(View):
 
 
 def posts(request):
+    if request.method == 'GET':
+        template_name = 'posts/create_post.html'
+        return render(request, template_name)
+
     if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            send_confirmation_letter.apply_async((), {'user_pk': user.pk, 'user_email': user.email, 'user_name': "User" if str(user.name)=='None' else user.name})
+        message = request.POST.get('message')
+        user = request.user
 
-            login(request, user)
-            return redirect('home')
-    else:
-        form = CreateUserForm()
-    return render(request, 'register.html', {'form': form})
-
-
-
-
-
-
-
-
+        post = Post(message=message, created_by=user)
+        post.save()
+        return HttpResponse('Added and waiting for approval', status=201)

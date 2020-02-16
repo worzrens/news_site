@@ -28,8 +28,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Post(models.Model):
-    text = models.TextField()
-    html_body = models.TextField()
+    message = models.TextField()
 
     POST_STATUS_CHOICES = [
         ('pending', 'Pending'),
