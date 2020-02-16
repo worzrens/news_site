@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
+from ckeditor.fields import RichTextField
 
 from .managers import UserManager
 
@@ -10,7 +11,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50, blank=True, null=True)
-    date_of_birth = models.DateTimeField(blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -28,7 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Post(models.Model):
-    message = models.TextField()
+    message = RichTextField()
 
     POST_STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -42,7 +43,7 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    text = models.TextField()
+    text = RichTextField()
     to_post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now=True)

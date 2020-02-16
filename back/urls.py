@@ -9,6 +9,7 @@ from back import views
 from back.forms import LoginForm
 
 urlpatterns = [
+    url(r'^/', views.index, name='index'),
     url(r'^home/', views.home, name='home'),
     url(r'^posts/', views.posts, name='posts'),
     url(r'^new_post/', views.new_post, name='new_post'),

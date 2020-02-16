@@ -15,6 +15,10 @@ from .tasks import send_confirmation_letter, notify_about_comment
 from .tokens import account_activation_token
 
 
+def index(request):
+    return redirect(r'home')
+
+
 @login_required
 def home(request):
     return render(request, 'home.html')
@@ -22,7 +26,7 @@ def home(request):
 
 @login_required
 def email_confirmed(request):
-    return render(request, 'email_confirmed.html')
+    return render(request, 'auth/email_confirmed.html')
 
 
 def register(request):
@@ -40,7 +44,7 @@ def register(request):
             return redirect('home')
     else:
         form = CreateUserForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'auth/register.html', {'form': form})
 
 
 def logout(request):
@@ -89,8 +93,10 @@ def comments(request, post_id):
         template_name = 'posts/create_comment.html'
         return render(request, template_name)
     if request.method == 'POST':
-        text = request.POST.get('text')
         user = request.user
+        if not user.is_active:
+            return HttpResponse('Not verified users cannot create posts or comment')
+        text = request.POST.get('text')
         to_post = Post.objects.get(id=post_id)
 
         comment = Comment(text=text, to_post=to_post, created_by=user)
@@ -111,8 +117,11 @@ def new_post(request):
         return render(request, template_name)
 
     if request.method == 'POST':
-        message = request.POST.get('message')
         user = request.user
+
+        if not user.is_active:
+            return HttpResponse('Not verified users cannot create posts or comment')
+        message = request.POST.get('message')
 
         if user.role != 'user':
             post = Post(message=message, created_by=user, status='approved')

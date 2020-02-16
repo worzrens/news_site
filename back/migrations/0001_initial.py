@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=254, unique=True)),
                 ('name', models.CharField(max_length=50)),
                 ('last_name', models.CharField(max_length=50)),
-                ('date_of_birth', models.DateTimeField(blank=True, null=True)),
+                ('date_of_birth', models.DateField(blank=True, null=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_staff', models.BooleanField(default=True)),
                 ('role', models.CharField(choices=[('user', 'Regular User'), ('editor', 'Editor'), ('admin', 'Admin')], default='user', max_length=10)),
