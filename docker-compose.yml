@@ -36,7 +36,7 @@ services:
     depends_on:
       - database
       - redis
-#      - celery
+      - celery
     logging:
       options:
         max-file: "5"
@@ -45,9 +45,6 @@ services:
   database:
     container_name: database
     image: postgres:latest
-#    volumes:
-     # - ./back/initial.sql:/docker-entrypoint-initdb.d/initial.sql
-    #  - $DB_DATA_LOC:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DATABASE_NAME}
       - POSTGRES_USER=${DATABASE_USER}
