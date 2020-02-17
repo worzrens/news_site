@@ -38,6 +38,17 @@ class CustomUserAdmin(UserAdmin):
     actions = [make_moderator, make_user]
 
 
+def approve_post(modeladmin, request, queryset):
+    queryset.update(status='approved')
+def decline_post(modeladmin, request, queryset):
+    queryset.update(status='declined')
+def to_pending_post(modeladmin, request, queryset):
+    queryset.update(status='pending')
+approve_post.short_description = "Approve selected posts"
+decline_post.short_description = "Decline selected posts"
+to_pending_post.short_description = "Revert posts to pending"
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     model = Post
@@ -51,6 +62,7 @@ class PostAdmin(admin.ModelAdmin):
             'fields': ('message', 'status'),
         }),
     )
+    actions = [approve_post, decline_post, to_pending_post]
     # fieldsets = (
     #     ('Regular info', {'fields': ('email', 'role')}),
     #     ('Personal info', {'fields': ('name', 'last_name', 'date_of_birth')}),
