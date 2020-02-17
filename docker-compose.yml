@@ -1,0 +1,91 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "$HTTP_PORT:80"
+      - "$HTTPS_PORT:443"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./back/:/var/www/back
+    depends_on:
+      - back
+
+  back:
+    build: ./back/
+    container_name: back
+    working_dir: /var/www/back
+    ports:
+      - $SERVER_PORT:8000
+    volumes:
+      - ./back/:/var/www/back
+    command: /bin/bash -c "./manage.py migrate && gunicorn news_site_planeks.wsgi -b 0.0.0.0 --workers=3"
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - PGHOST=$DATABASE_HOST
+      - DATABASE_NAME
+      - DATABASE_PASSWORD
+      - DATABASE_HOST
+      - DATABASE_PORT
+      - EMAIL_API_KEY
+    depends_on:
+      - database
+      - redis
+#      - celery
+    logging:
+      options:
+        max-file: "5"
+        max-size: "10m"
+
+  database:
+    container_name: database
+    image: postgres:latest
+#    volumes:
+     # - ./back/initial.sql:/docker-entrypoint-initdb.d/initial.sql
+    #  - $DB_DATA_LOC:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    logging:
+      options:
+        max-file: "5"
+        max-size: "10m"
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    sysctls:
+      net.core.somaxconn: "511"
+    logging:
+      options:
+        max-file: "5"
+        max-size: "10m"
+
+  celery:
+    build:
+      context: ./back/
+      dockerfile: Dockerfile
+    container_name: celery
+    working_dir: /var/www/back
+    volumes:
+      - ./back/:/var/www/back
+    command: /bin/bash -c "celery -A back.tasks worker --loglevel=info"
+    depends_on:
+      - redis
+      - database
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL
+      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - PGHOST=$DATABASE_HOST
+    logging:
+      options:
+        max-file: "5"
+        max-size: "10m"
