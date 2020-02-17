@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 
 from .forms import CreateUserForm, ChangePostForm, ChangeCommentForm
 from .models import User, Post, Comment
@@ -10,9 +10,14 @@ from .models import User, Post, Comment
 
 def make_moderator(modeladmin, request, queryset):
     queryset.update(role='editor', is_staff=True)
+    pms = Permission.objects.filter(codename__in=["add_post", "change_post", 'add_comment', 'change_comment'])
+    for user in queryset:
+        user.user_permissions.add(*pms)
 def make_user(modeladmin, request, queryset):
     queryset.update(role='user', is_staff=False, is_superuser=False)
-
+    pms = Permission.objects.filter(codename__in=["add_post", "change_post", 'add_comment', 'change_comment', 'change_user', 'delete_user'])
+    for user in queryset:
+        user.user_permissions.remove(*pms)
 make_moderator.short_description = "Give moderator privileges"
 make_user.short_description = "Remove all privileges"
 

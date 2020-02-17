@@ -7,11 +7,11 @@
 <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
 
 
-<form action="" method="POST">
+<form class="col-6 mx-auto" action="" method="POST">
     {% csrf_token %}
-    <h3>Add comment:</h3>
+    <h3 class="m-2">Add comment:</h3>
     <textarea name="text" id="editor"></textarea>
-    <input type="submit"/>
+    <input class="btn btn-primary m-2" type="submit"/>
 </form>
 
 <script type="text/javascript">

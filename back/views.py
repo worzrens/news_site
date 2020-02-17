@@ -72,14 +72,7 @@ class ActivateUser(View):
             # return render(request, 'email_confirmed.html', {'user': request.user})
 
         else:
-            return HttpResponse('Activation link is invalid!')
-
-    def post(self, request):
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
-            return HttpResponse('Password changed successfully')
+            return render(request, 'home.html', {"message": 'Activation link is invalid!'})
 
 
 def posts(request):
@@ -95,7 +88,7 @@ def comments(request, post_id):
     if request.method == 'POST':
         user = request.user
         if not user.is_active:
-            return HttpResponse('Not verified users cannot create posts or comment')
+            return render(request, 'home.html', {"message": 'Not verified users cannot create posts or comment'})
         text = request.POST.get('text')
         to_post = Post.objects.get(id=post_id)
 
@@ -120,12 +113,15 @@ def new_post(request):
         user = request.user
 
         if not user.is_active:
-            return HttpResponse('Not verified users cannot create posts or comment')
+            return render(request, 'home.html', {"message": 'Not verified users cannot create posts or comment'})
         message = request.POST.get('message')
 
         if user.role != 'user':
             post = Post(message=message, created_by=user, status='approved')
+            post.save()
+            return redirect('posts')
         else:
             post = Post(message=message, created_by=user)
-        post.save()
-        return HttpResponse('Added and waiting for approval', status=201)
+            post.save()
+            return render(request, 'home.html', {"message": 'Waiting for post approval'})
+

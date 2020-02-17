@@ -1,29 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2 class="m-5">Feed</h2>
+  <h2 class="m-2">Feed</h2>
   {% csrf_token %}
 
-    <div class="row">
+    <div class="overflow-auto">
     {% for post in all_posts %}
-        <div class="border border-primary rounded col-5 mx-auto ">
-            <p>{{ post.message|safe }}</p>
+        <div class="m-3 col-5 mx-auto border border-primary rounded overflow-auto" style="max-height: 40rem">
+            <div class="p-4 text-left">{{ post.message|safe }}</div>
             <p class="text-right"><strong>At:</strong> {{ post.created_at}}</p>
             <p class="text-right"><strong>By</strong> <a href="#">{{ post.created_by.email }}</a></p>
 
-  <div class="dropdown-divider"></div>
-            <div class="col-11 mx-auto m-2 text-left">
-              <strong class="m-1">Comments:</strong><br>
-              {% for comment in post.comment_set.all %}
-              <div class="border border-dark m-1 rounded p-2">
-                <p>{{comment.text|safe}}</p>
+            <div class="dropdown-divider"></div>
+            <div class="col-11 mx-auto m-2 text-left overflow-auto">
+                  <strong class="m-1">Comments:</strong><br>
+                  {% for comment in post.comment_set.all %}
+                  <div class="border border-dark m-1 rounded p-2">
+                    <p>{{comment.text|safe}}</p>
 
-                  <p class="text-right"><strong>At:</strong> {{ comment.created_at }}</p>
-                  <p class="text-right"><strong><strong>By</strong> <a href="#">{{ comment.created_by }}</a></p>
-              </div>
-             </div>
-          {% endfor %}
-          <a class="btn btn-outline-primary m-2" href="/comments/{{ post.id }}">Leave a comment</a>
+                      <p class="text-right"><strong>At:</strong> {{ comment.created_at }}</p>
+                      <p class="text-right"><strong><strong>By</strong> <a href="#">{{ comment.created_by }}</a></p>
+                 </div>
+              {% endfor %}
+            </div>
+          <a class="col-3 mx-auto btn btn-outline-primary m-2" href="/comments/{{ post.id }}">Leave a comment</a>
         </div>
     {% endfor %}
     </div>
